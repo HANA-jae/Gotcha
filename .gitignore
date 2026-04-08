@@ -1,0 +1,57 @@
+# Backend
+backend/target/
+backend/.idea/
+backend/.vscode/
+backend/*.iml
+backend/*.iws
+backend/*.ipr
+backend/.DS_Store
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# Frontend
+frontend/node_modules/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/build/
+frontend/.idea/
+frontend/.vscode/
+frontend/.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node
+.npm
+.node_repl_history
+
+# Build outputs
+dist/
+build/
+target/
+
+# Docker
+.docker/
