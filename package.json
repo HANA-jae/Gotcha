@@ -8,7 +8,14 @@
     "backend:dev": "cd backend && mvn spring-boot:run",
     "frontend:dev": "cd frontend && npm start",
     "install:all": "npm install && cd backend && mvn clean install && cd ../frontend && npm install && cd ..",
-    "build:all": "cd backend && mvn clean package && cd ../frontend && npm run build && cd .."
+    "build:all": "cd backend && mvn clean package && cd ../frontend && npm run build && cd ..",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:restart": "docker-compose restart",
+    "docker:logs": "docker-compose logs -f",
+    "docker:deploy": "docker-compose -f docker-compose.yml up -d --build",
+    "docker:clean": "docker-compose down -v && docker system prune -a --force"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

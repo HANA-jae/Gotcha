@@ -5,24 +5,26 @@ services:
     image: postgres:16-alpine
     container_name: gotcha-postgres
     environment:
-      POSTGRES_DB: gotcha_db
-      POSTGRES_USER: gotcha_user
-      POSTGRES_PASSWORD: gotcha_password
+      POSTGRES_DB: ${DB_NAME:-gotcha_db}
+      POSTGRES_USER: ${DB_USER:-gotcha_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-gotcha_password}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gotcha_user"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-gotcha_user}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - gotcha-network
 
   redis:
     image: redis:7-alpine
     container_name: gotcha-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -31,11 +33,51 @@ services:
       timeout: 5s
       retries: 5
     command: redis-server --appendonly yes
+    networks:
+      - gotcha-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gotcha-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-gotcha_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-gotcha_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-gotcha_password}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SERVER_PORT: 8080
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gotcha-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gotcha-frontend
+    environment:
+      REACT_APP_API_URL: ${API_URL:-http://localhost:8080}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+    networks:
+      - gotcha-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
   redis_data:
 
 networks:
-  default:
+  gotcha-network:
     name: gotcha-network

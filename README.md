@@ -245,16 +245,76 @@ npm run build
 
 ## Docker Deployment
 
-### Build Docker Image for Backend
+### Deploy with Docker Compose
+
+1. **Build and run all services**:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+2. **Services will be available at**:
+   - Frontend: http://localhost:3000
+   - Backend: http://localhost:8080
+   - PostgreSQL: localhost:5432
+   - Redis: localhost:6379
+
+3. **Check service status**:
+   ```bash
+   docker-compose ps
+   ```
+
+4. **View logs**:
+   ```bash
+   docker-compose logs -f
+   ```
+
+5. **Stop all services**:
+   ```bash
+   docker-compose down
+   ```
+
+### Environment Variables
+
+Create a `.env` file based on `.env.example`:
 
 ```bash
-cd backend
-docker build -t gotcha-backend:latest .
+cp .env.example .env
 ```
 
-### Deploy with Docker Compose (production setup)
+Configure the following variables:
+```env
+# Database
+DB_NAME=gotcha_db
+DB_USER=gotcha_user
+DB_PASSWORD=your_secure_password
 
-Create a `docker-compose.prod.yml` to include the backend service.
+# Backend
+BACKEND_PORT=8080
+
+# Frontend
+FRONTEND_PORT=3000
+REACT_APP_API_URL=http://localhost:8080
+```
+
+### Production Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for comprehensive production deployment guide including:
+- Environment configuration
+- Security best practices
+- Monitoring and logging
+- Backup and restoration
+- Troubleshooting guide
+
+### Quick Deploy Command
+
+```bash
+npm run docker:deploy
+```
+
+This is equivalent to:
+```bash
+docker-compose -f docker-compose.yml up -d --build
+```
 
 ## Troubleshooting
 
