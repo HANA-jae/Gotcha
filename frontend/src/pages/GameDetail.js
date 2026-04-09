@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
+  getGames,
   getGameById,
   getBoxesByGame,
   getItemsByBox,
@@ -11,7 +12,7 @@ import {
 import '../styles/GameDetail.css';
 
 function GameDetail() {
-  const { gameId } = useParams();
+  const { gameName } = useParams();  // ID가 아니라 게임 이름(slug)
   const navigate = useNavigate();
 
   const [game, setGame] = useState(null);
@@ -29,7 +30,7 @@ function GameDetail() {
   const [celebrationItem, setCelebrationItem] = useState(null);
 
   // localStorage 키
-  const getStorageKey = () => `gotcha_${gameId}`;
+  const getStorageKey = () => `gotcha_${gameName}`;
 
   // localStorage에서 상태 로드
   useEffect(() => {
@@ -58,7 +59,7 @@ function GameDetail() {
       localStorage.setItem(getStorageKey(), JSON.stringify(data));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [purchasedBundles, premiumBundles, unboxedItems, gameId]);
+  }, [purchasedBundles, premiumBundles, unboxedItems, gameName]);
 
   // 데이터 초기화
   const handleReset = () => {
@@ -73,7 +74,7 @@ function GameDetail() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadGameData();
-  }, [gameId]);
+  }, [gameName]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -86,13 +87,41 @@ function GameDetail() {
     try {
       setLoading(true);
       
-      // 게임 정보 로드
-      const gameRes = await getGameById(gameId);
-      setGame(gameRes.data);
+      // 모든 게임 조회 후 gameName과 매칭되는 게임 찾기
+      const gamesRes = await getGames();
+      console.log('All games:', gamesRes);
+      
+      let gameData = null;
+      let gameId = null;
+      
+      // 응답 형식에 따라 처리
+      let gamesList = [];
+      if (Array.isArray(gamesRes.data)) {
+        gamesList = gamesRes.data;
+      } else if (Array.isArray(gamesRes)) {
+        gamesList = gamesRes;
+      }
+      
+      // gameName과 일치하는 게임 찾기 (slug 또는 id로)
+      gameData = gamesList.find(g => 
+        g.slug === gameName || 
+        g.name?.toLowerCase() === gameName?.toLowerCase() ||
+        g.id?.toString() === gameName
+      );
 
-      // 박스 정보 로드 - 모든 가능한 응답 형식 처리
+      if (!gameData) {
+        setError(`게임을 찾을 수 없습니다: ${gameName}`);
+        setLoading(false);
+        return;
+      }
+
+      gameId = gameData.id;
+      setGame(gameData);
+      console.log('Found game:', gameData);
+
+      // 박스 정보 로드
       const boxesRes = await getBoxesByGame(gameId);
-      console.log('boxesRes full object:', boxesRes);
+      console.log('boxesRes:', boxesRes);
       
       // 다양한 응답 형식 처리
       let boxesData = [];
@@ -102,12 +131,9 @@ function GameDetail() {
         boxesData = boxesRes;
       } else if (boxesRes.data && Array.isArray(boxesRes.data.data)) {
         boxesData = boxesRes.data.data;
-      } else if (boxesRes.data && typeof boxesRes.data === 'object') {
-        boxesData = [];
-        console.warn('Unexpected boxes response format:', boxesRes.data);
       }
       
-      console.log('Final boxesData:', boxesData, 'Type:', Array.isArray(boxesData));
+      console.log('Final boxesData:', boxesData);
       setBoxes(boxesData);
 
       if (Array.isArray(boxesData) && boxesData.length > 0) {

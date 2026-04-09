@@ -29,7 +29,7 @@ function Home() {
         <h2 className="section-title">게임 선택</h2>
         <div className="games-grid">
           {GAMES.map((game) => (
-            <Link to={`/game/${game.id}`} key={game.id} className="game-card-link">
+            <Link to={`/game/${game.slug}`} key={game.id} className="game-card-link">
               <div className="game-card">
                 <div className="game-card-image">
                   <div className="game-image-placeholder">
