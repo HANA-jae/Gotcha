@@ -41,6 +41,7 @@ api.interceptors.response.use(
       status: error.response?.status,
       data: error.response?.data,
     });
+    console.error('Full error object:', error);
     return Promise.reject(error);
   }
 );
@@ -56,14 +57,14 @@ export const createBox = (gameId: string | number, boxData: Partial<Box>): Promi
 export const deleteBox = (boxId: string | number): Promise<AxiosResponse<void>> => api.delete(`/boxes/${boxId}`);
 
 // Item APIs
-export const getItemsByBox = (boxId: string | number): Promise<AxiosResponse<Item[]>> => api.get(`/boxes/${boxId}/items`);
-export const createItem = (boxId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.post(`/boxes/${boxId}/items`, itemData);
-export const updateItem = (itemId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.put(`/items/${itemId}`, itemData);
-export const deleteItem = (itemId: string | number): Promise<AxiosResponse<void>> => api.delete(`/items/${itemId}`);
+export const getItemsByBox = (boxId: string | number): Promise<AxiosResponse<Item[]>> => api.get(`/games/boxes/${boxId}/items`);
+export const createItem = (boxId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.post(`/games/boxes/${boxId}/items`, itemData);
+export const updateItem = (itemId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.put(`/games/items/${itemId}`, itemData);
+export const deleteItem = (itemId: string | number): Promise<AxiosResponse<void>> => api.delete(`/games/items/${itemId}`);
 
 // Simulate APIs
-export const simulate = (boxId: string | number): Promise<AxiosResponse<unknown>> => api.post(`/boxes/${boxId}/simulate`);
+export const simulate = (boxId: string | number): Promise<AxiosResponse<unknown>> => api.post(`/games/boxes/${boxId}/simulate`);
 export const simulateMultiple = (boxId: string | number, count: number): Promise<AxiosResponse<unknown>> =>
-  api.post(`/boxes/${boxId}/simulate-multiple`, null, { params: { count } });
+  api.post(`/games/boxes/${boxId}/simulate-multiple`, null, { params: { count } });
 
 export default api;
