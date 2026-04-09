@@ -8,28 +8,28 @@ import {
   deleteItem,
   createItem,
 } from '../api/api';
-import '../styles/GameDetail.css';
+import { Game, Box, Item, UnboxedItem } from '../types';
 
-function GameDetail() {
-  const { gameName } = useParams();  // ID가 아니라 게임 이름(slug)
+function GameDetail(): React.ReactElement {
+  const { gameName } = useParams<{ gameName: string }>();
   const navigate = useNavigate();
 
-  const [game, setGame] = useState(null);
-  const [boxes, setBoxes] = useState([]);
-  const [selectedBox, setSelectedBox] = useState(null);
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [purchasedBundles, setPurchasedBundles] = useState({});
-  const [bundleQuantity, setBundleQuantity] = useState(1);
-  const [purchasing, setPurchasing] = useState(false);
-  const [premiumBundles, setPremiumBundles] = useState({});
-  const [unboxedItems, setUnboxedItems] = useState([]);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [celebrationItem, setCelebrationItem] = useState(null);
+  const [game, setGame] = useState<Game | null>(null);
+  const [boxes, setBoxes] = useState<Box[]>([]);
+  const [selectedBox, setSelectedBox] = useState<Box | null>(null);
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [purchasedBundles, setPurchasedBundles] = useState<Record<string | number, number>>({});
+  const [bundleQuantity, setBundleQuantity] = useState<number>(1);
+  const [purchasing, setPurchasing] = useState<boolean>(false);
+  const [premiumBundles, setPremiumBundles] = useState<Record<string | number, number>>({});
+  const [unboxedItems, setUnboxedItems] = useState<UnboxedItem[]>([]);
+  const [showCelebration, setShowCelebration] = useState<boolean>(false);
+  const [celebrationItem, setCelebrationItem] = useState<UnboxedItem | null>(null);
 
   // localStorage 키
-  const getStorageKey = () => `gotcha_${gameName}`;
+  const getStorageKey = (): string => `gotcha_${gameName}`;
 
   // localStorage에서 상태 로드
   useEffect(() => {
@@ -61,7 +61,7 @@ function GameDetail() {
   }, [purchasedBundles, premiumBundles, unboxedItems, gameName]);
 
   // 데이터 초기화
-  const handleReset = () => {
+  const handleReset = (): void => {
     if (window.confirm('모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
       localStorage.removeItem(getStorageKey());
       setPurchasedBundles({});
@@ -82,28 +82,28 @@ function GameDetail() {
     }
   }, [selectedBox]);
 
-  const loadGameData = async () => {
+  const loadGameData = async (): Promise<void> => {
     try {
       setLoading(true);
-      
+
       // 모든 게임 조회 후 gameName과 매칭되는 게임 찾기
       const gamesRes = await getGames();
       console.log('All games:', gamesRes);
-      
-      let gameData = null;
-      let gameId = null;
-      
+
+      let gameData: Game | undefined;
+      let gameId: string | number | null = null;
+
       // 응답 형식에 따라 처리
-      let gamesList = [];
+      let gamesList: Game[] = [];
       if (Array.isArray(gamesRes.data)) {
         gamesList = gamesRes.data;
       } else if (Array.isArray(gamesRes)) {
-        gamesList = gamesRes;
+        gamesList = gamesRes as Game[];
       }
-      
+
       // gameName과 일치하는 게임 찾기 (slug 또는 id로)
-      gameData = gamesList.find(g => 
-        g.slug === gameName || 
+      gameData = gamesList.find((g: Game) =>
+        g.slug === gameName ||
         g.name?.toLowerCase() === gameName?.toLowerCase() ||
         g.id?.toString() === gameName
       );
@@ -121,17 +121,17 @@ function GameDetail() {
       // 박스 정보 로드
       const boxesRes = await getBoxesByGame(gameId);
       console.log('boxesRes:', boxesRes);
-      
+
       // 다양한 응답 형식 처리
-      let boxesData = [];
+      let boxesData: Box[] = [];
       if (Array.isArray(boxesRes.data)) {
         boxesData = boxesRes.data;
       } else if (Array.isArray(boxesRes)) {
-        boxesData = boxesRes;
-      } else if (boxesRes.data && Array.isArray(boxesRes.data.data)) {
-        boxesData = boxesRes.data.data;
+        boxesData = boxesRes as Box[];
+      } else if (boxesRes.data && Array.isArray((boxesRes.data as any).data)) {
+        boxesData = (boxesRes.data as any).data;
       }
-      
+
       console.log('Final boxesData:', boxesData);
       setBoxes(boxesData);
 
@@ -146,8 +146,9 @@ function GameDetail() {
     }
   };
 
-  const loadBoxItems = async () => {
+  const loadBoxItems = async (): Promise<void> => {
     try {
+      if (!selectedBox) return;
       const itemsRes = await getItemsByBox(selectedBox.id);
       setItems(itemsRes.data);
     } catch (err) {
@@ -156,16 +157,16 @@ function GameDetail() {
     }
   };
 
-  const handleItemChange = (index, field, value) => {
+  const handleItemChange = (index: number, field: keyof Item, value: string | number): void => {
     const updatedItems = [...items];
     updatedItems[index] = {
       ...updatedItems[index],
-      [field]: field === 'probability' ? parseFloat(value) : value,
+      [field]: field === 'probability' ? parseFloat(value.toString()) : value,
     };
     setItems(updatedItems);
   };
 
-  const handleSaveItem = async (index) => {
+  const handleSaveItem = async (index: number): Promise<void> => {
     try {
       const item = items[index];
       await updateItem(item.id, item);
@@ -176,7 +177,7 @@ function GameDetail() {
     }
   };
 
-  const handleDeleteItem = async (index) => {
+  const handleDeleteItem = async (index: number): Promise<void> => {
     try {
       const item = items[index];
       await deleteItem(item.id);
@@ -187,12 +188,13 @@ function GameDetail() {
     }
   };
 
-  const handleAddItem = async () => {
+  const handleAddItem = async (): Promise<void> => {
     try {
+      if (!selectedBox) return;
       const newItem = {
         boxId: selectedBox.id,
         name: '새 아이템',
-        grade: 'Normal',
+        grade: 'Normal' as const,
         probability: 0,
         imageUrl: '',
       };
@@ -204,21 +206,21 @@ function GameDetail() {
     }
   };
 
-  const calculateTotalProbability = () => {
+  const calculateTotalProbability = (): number => {
     return items.reduce((sum, item) => sum + (item.probability || 0), 0);
   };
 
-  const handleBuyBundle = async () => {
+  const handleBuyBundle = async (): Promise<void> => {
     try {
       setPurchasing(true);
-      
+
       // 현재 박스의 구매한 개수 증가
-      const currentCount = purchasedBundles[selectedBox.id] || 0;
+      const currentCount = purchasedBundles[selectedBox!.id] || 0;
       setPurchasedBundles({
         ...purchasedBundles,
-        [selectedBox.id]: currentCount + bundleQuantity,
+        [selectedBox!.id]: currentCount + bundleQuantity,
       });
-      
+
       setError(null);
     } catch (err) {
       setError('꾸러미 구매에 실패했습니다');
@@ -229,9 +231,9 @@ function GameDetail() {
   };
 
   // 일반 꾸러미 열기: 6.5% 확률로 최고급 꾸러미 획득
-  const handleOpenBundle = () => {
+  const handleOpenBundle = (): void => {
     const rollChance = Math.random() * 100;
-    let item;
+    let item: UnboxedItem;
     let showAnimation = false;
 
     if (rollChance < 6.5) {
@@ -239,7 +241,7 @@ function GameDetail() {
       item = { name: '최고급 꾸러미', type: 'premium', rarity: 'premium' };
       setPremiumBundles({
         ...premiumBundles,
-        [selectedBox.id]: (premiumBundles[selectedBox.id] || 0) + 1,
+        [selectedBox!.id]: (premiumBundles[selectedBox!.id] || 0) + 1,
       });
       showAnimation = true; // 최고급 꾸러미 획득 시만 애니메이션 표시
     } else {
@@ -259,23 +261,23 @@ function GameDetail() {
     setUnboxedItems([...unboxedItems, item]);
 
     // 일반 꾸러미 개수 1 감소
-    const currentCount = purchasedBundles[selectedBox.id] || 0;
+    const currentCount = purchasedBundles[selectedBox!.id] || 0;
     if (currentCount > 1) {
       setPurchasedBundles({
         ...purchasedBundles,
-        [selectedBox.id]: currentCount - 1,
+        [selectedBox!.id]: currentCount - 1,
       });
     } else {
       const newBundles = { ...purchasedBundles };
-      delete newBundles[selectedBox.id];
+      delete newBundles[selectedBox!.id];
       setPurchasedBundles(newBundles);
     }
   };
 
   // 최고급 꾸러미 열기
-  const handleOpenPremiumBundle = () => {
+  const handleOpenPremiumBundle = (): void => {
     const rollChance = Math.random() * 100;
-    let item;
+    let item: UnboxedItem;
     let showAnimation = false;
 
     // 카리나, 지젤, 윈터, 닝닝 캐릭터
@@ -310,15 +312,15 @@ function GameDetail() {
     setUnboxedItems([...unboxedItems, item]);
 
     // 최고급 꾸러미 개수 1 감소
-    const currentCount = premiumBundles[selectedBox.id] || 0;
+    const currentCount = premiumBundles[selectedBox!.id] || 0;
     if (currentCount > 1) {
       setPremiumBundles({
         ...premiumBundles,
-        [selectedBox.id]: currentCount - 1,
+        [selectedBox!.id]: currentCount - 1,
       });
     } else {
       const newPremium = { ...premiumBundles };
-      delete newPremium[selectedBox.id];
+      delete newPremium[selectedBox!.id];
       setPremiumBundles(newPremium);
     }
   };

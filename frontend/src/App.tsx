@@ -1,10 +1,9 @@
-import React from 'react';
+import * as React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import GameDetail from './pages/GameDetail';
-import './App.css';
 
-function App() {
+function App(): React.ReactElement {
   return (
     <Router>
       <div className="App">

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { User, UserFormData } from '../types';
 
-function UserDetail() {
-  const { id } = useParams();
+function UserDetail(): React.ReactElement {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [formData, setFormData] = useState<UserFormData>({
     username: '',
     email: '',
     password: ''
@@ -19,10 +20,10 @@ function UserDetail() {
     fetchUser();
   }, [id]);
 
-  const fetchUser = async () => {
+  const fetchUser = async (): Promise<void> => {
     try {
       setLoading(true);
-      const response = await axios.get(`/users/${id}`);
+      const response = await axios.get<User>(`/users/${id}`);
       setUser(response.data);
       setFormData({
         username: response.data.username,
@@ -38,7 +39,7 @@ function UserDetail() {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -46,10 +47,10 @@ function UserDetail() {
     }));
   };
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     try {
-      const response = await axios.put(`/users/${id}`, formData);
+      const response = await axios.put<User>(`/users/${id}`, formData);
       setUser(response.data);
       setIsEditing(false);
       setError(null);
@@ -59,7 +60,7 @@ function UserDetail() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         await axios.delete(`/users/${id}`);

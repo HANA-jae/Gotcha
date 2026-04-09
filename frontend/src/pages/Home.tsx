@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/Home.css';
+import { Game } from '../types';
 
 // Hardcoded games data
-const GAMES = [
+const GAMES: Game[] = [
   {
     id: 1,
     name: 'BATTLEGROUNDS',
@@ -12,7 +12,7 @@ const GAMES = [
   },
 ];
 
-function Home() {
+function Home(): React.ReactElement {
   return (
     <div className="home-container">
       {/* Hero Section */}

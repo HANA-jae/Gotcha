@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { User } from '../types';
 
-function UserList() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function UserList(): React.ReactElement {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (): Promise<void> => {
     try {
       setLoading(true);
-      const response = await axios.get('/users');
+      const response = await axios.get<User[]>('/users');
       setUsers(response.data);
       setError(null);
     } catch (err) {
@@ -25,7 +26,7 @@ function UserList() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string | number): Promise<void> => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         await axios.delete(`/users/${id}`);
