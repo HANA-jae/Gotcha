@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   getGames,
-  getGameById,
   getBoxesByGame,
   getItemsByBox,
   updateItem,
@@ -46,7 +45,7 @@ function GameDetail() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameId]);
+  }, [gameName]);
 
   // 상태가 변경될 때마다 localStorage에 저장
   useEffect(() => {

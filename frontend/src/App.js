@@ -19,7 +19,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/game/:gameId" element={<GameDetail />} />
+            <Route path="/game/:gameName" element={<GameDetail />} />
           </Routes>
         </main>
 
