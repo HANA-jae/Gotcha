@@ -85,15 +85,32 @@ function GameDetail() {
   const loadGameData = async () => {
     try {
       setLoading(true);
+      
+      // 게임 정보 로드
       const gameRes = await getGameById(gameId);
       setGame(gameRes.data);
 
+      // 박스 정보 로드 - 모든 가능한 응답 형식 처리
       const boxesRes = await getBoxesByGame(gameId);
-      const boxesData = Array.isArray(boxesRes.data) ? boxesRes.data : boxesRes;
-      console.log('boxesData:', boxesData);
+      console.log('boxesRes full object:', boxesRes);
+      
+      // 다양한 응답 형식 처리
+      let boxesData = [];
+      if (Array.isArray(boxesRes.data)) {
+        boxesData = boxesRes.data;
+      } else if (Array.isArray(boxesRes)) {
+        boxesData = boxesRes;
+      } else if (boxesRes.data && Array.isArray(boxesRes.data.data)) {
+        boxesData = boxesRes.data.data;
+      } else if (boxesRes.data && typeof boxesRes.data === 'object') {
+        boxesData = [];
+        console.warn('Unexpected boxes response format:', boxesRes.data);
+      }
+      
+      console.log('Final boxesData:', boxesData, 'Type:', Array.isArray(boxesData));
       setBoxes(boxesData);
 
-      if (boxesData.length > 0) {
+      if (Array.isArray(boxesData) && boxesData.length > 0) {
         setSelectedBox(boxesData[0]);
       }
     } catch (err) {
