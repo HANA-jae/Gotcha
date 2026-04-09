@@ -89,10 +89,12 @@ function GameDetail() {
       setGame(gameRes.data);
 
       const boxesRes = await getBoxesByGame(gameId);
-      setBoxes(boxesRes.data);
+      const boxesData = Array.isArray(boxesRes.data) ? boxesRes.data : boxesRes;
+      console.log('boxesData:', boxesData);
+      setBoxes(boxesData);
 
-      if (boxesRes.data.length > 0) {
-        setSelectedBox(boxesRes.data[0]);
+      if (boxesData.length > 0) {
+        setSelectedBox(boxesData[0]);
       }
     } catch (err) {
       setError('게임 정보를 불러올 수 없습니다');
