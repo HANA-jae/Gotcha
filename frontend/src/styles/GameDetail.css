@@ -11,6 +11,11 @@
   margin-bottom: 2rem;
   border-bottom: 2px solid rgba(245, 197, 24, 0.2);
   border-radius: 12px;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: calc(2rem + 0px);
+  padding-right: calc(2rem + 0px);
 }
 
 .btn-back {
