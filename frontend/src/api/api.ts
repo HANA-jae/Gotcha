@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { Game, Box, Item } from '../types';
 
-// 환경 변수에서 API URL 가져오기 (기본값: 상대 경로)
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api/games';
+// 환경 변수에서 API URL 가져오기 (기본값: /api)
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -46,24 +46,24 @@ api.interceptors.response.use(
 );
 
 // Game APIs
-export const getGames = (): Promise<AxiosResponse<Game[]>> => api.get('/');
-export const getGameById = (gameId: string | number): Promise<AxiosResponse<Game>> => api.get(`/${gameId}`);
-export const createGame = (gameData: Partial<Game>): Promise<AxiosResponse<Game>> => api.post('/', gameData);
+export const getGames = (): Promise<AxiosResponse<Game[]>> => api.get('/games');
+export const getGameById = (gameId: string | number): Promise<AxiosResponse<Game>> => api.get(`/games/${gameId}`);
+export const createGame = (gameData: Partial<Game>): Promise<AxiosResponse<Game>> => api.post('/games', gameData);
 
 // Box APIs
-export const getBoxesByGame = (gameId: string | number): Promise<AxiosResponse<Box[]>> => api.get(`/${gameId}/boxes`);
-export const createBox = (gameId: string | number, boxData: Partial<Box>): Promise<AxiosResponse<Box>> => api.post(`/${gameId}/boxes`, boxData);
-export const deleteBox = (boxId: string | number): Promise<AxiosResponse<void>> => api.delete(`boxes/${boxId}`);
+export const getBoxesByGame = (gameId: string | number): Promise<AxiosResponse<Box[]>> => api.get(`/games/${gameId}/boxes`);
+export const createBox = (gameId: string | number, boxData: Partial<Box>): Promise<AxiosResponse<Box>> => api.post(`/games/${gameId}/boxes`, boxData);
+export const deleteBox = (boxId: string | number): Promise<AxiosResponse<void>> => api.delete(`/boxes/${boxId}`);
 
 // Item APIs
-export const getItemsByBox = (boxId: string | number): Promise<AxiosResponse<Item[]>> => api.get(`boxes/${boxId}/items`);
-export const createItem = (boxId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.post(`boxes/${boxId}/items`, itemData);
-export const updateItem = (itemId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.put(`items/${itemId}`, itemData);
-export const deleteItem = (itemId: string | number): Promise<AxiosResponse<void>> => api.delete(`items/${itemId}`);
+export const getItemsByBox = (boxId: string | number): Promise<AxiosResponse<Item[]>> => api.get(`/boxes/${boxId}/items`);
+export const createItem = (boxId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.post(`/boxes/${boxId}/items`, itemData);
+export const updateItem = (itemId: string | number, itemData: Partial<Item>): Promise<AxiosResponse<Item>> => api.put(`/items/${itemId}`, itemData);
+export const deleteItem = (itemId: string | number): Promise<AxiosResponse<void>> => api.delete(`/items/${itemId}`);
 
 // Simulate APIs
-export const simulate = (boxId: string | number): Promise<AxiosResponse<unknown>> => api.post(`boxes/${boxId}/simulate`);
+export const simulate = (boxId: string | number): Promise<AxiosResponse<unknown>> => api.post(`/boxes/${boxId}/simulate`);
 export const simulateMultiple = (boxId: string | number, count: number): Promise<AxiosResponse<unknown>> =>
-  api.post(`boxes/${boxId}/simulate-multiple`, null, { params: { count } });
+  api.post(`/boxes/${boxId}/simulate-multiple`, null, { params: { count } });
 
 export default api;

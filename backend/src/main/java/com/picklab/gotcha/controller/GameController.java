@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/games")
+@RequestMapping("/")
 @RequiredArgsConstructor
 @Tag(name = "Game Management", description = "APIs for gacha game management")
 public class GameController {
