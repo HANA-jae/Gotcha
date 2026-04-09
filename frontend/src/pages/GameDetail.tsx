@@ -10,7 +10,7 @@ import {
 } from '../api/api';
 import { Game, Box, Item, UnboxedItem } from '../types';
 
-function GameDetail(): React.ReactElement {
+function GameDetail() {
   const { gameName } = useParams<{ gameName: string }>();
   const navigate = useNavigate();
 

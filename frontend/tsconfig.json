@@ -1,23 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020",
+    "useDefineForClassFields": true,
     "lib": ["es2020", "dom", "dom.iterable"],
-    "jsx": "react",
-    "jsxFactory": "React.createElement",
-    "jsxFragmentFactory": "React.Fragment",
     "module": "esnext",
-    "moduleResolution": "node",
-    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["node", "react", "react-dom", "react-scripts"]
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler"
   },
   "include": ["src"],
   "exclude": ["node_modules"]

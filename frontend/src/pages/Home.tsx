@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Link } from 'react-router-dom';
 import { Game } from '../types';
 
@@ -12,7 +12,7 @@ const GAMES: Game[] = [
   },
 ];
 
-function Home(): React.ReactElement {
+function Home() {
   return (
     <div className="home-container">
       {/* Hero Section */}
