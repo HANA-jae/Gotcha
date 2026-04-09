@@ -51,8 +51,8 @@ export const getGameById = (gameId: string | number): Promise<AxiosResponse<Game
 export const createGame = (gameData: Partial<Game>): Promise<AxiosResponse<Game>> => api.post('/', gameData);
 
 // Box APIs
-export const getBoxesByGame = (gameId: string | number): Promise<AxiosResponse<Box[]>> => api.get(`${gameId}/boxes`);
-export const createBox = (gameId: string | number, boxData: Partial<Box>): Promise<AxiosResponse<Box>> => api.post(`${gameId}/boxes`, boxData);
+export const getBoxesByGame = (gameId: string | number): Promise<AxiosResponse<Box[]>> => api.get(`/${gameId}/boxes`);
+export const createBox = (gameId: string | number, boxData: Partial<Box>): Promise<AxiosResponse<Box>> => api.post(`/${gameId}/boxes`, boxData);
 export const deleteBox = (boxId: string | number): Promise<AxiosResponse<void>> => api.delete(`boxes/${boxId}`);
 
 // Item APIs
