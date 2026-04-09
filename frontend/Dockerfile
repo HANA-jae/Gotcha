@@ -16,6 +16,6 @@ COPY --from=builder /build/build ./build
 COPY --from=builder /build/package*.json .
 RUN npm install --only=production && npm install -g serve
 
-EXPOSE 3000
+EXPOSE 5001
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["serve", "-s", "build", "-l", "5001"]
